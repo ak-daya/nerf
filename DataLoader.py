@@ -56,7 +56,7 @@ class DataLoader:
 
         except json.JSONDecodeError:
             print(f"{fname} is not a valid JSON file.")
-
+            
         except Exception as e: 
             print(e)
 
