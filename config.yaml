@@ -1,0 +1,40 @@
+Early_Stopping:
+  n_restarts: 10
+  warmup_iters: 100
+  warmup_min_fitness: 10.0
+Encoders:
+  d_input: 3
+  log_space: true
+  n_freqs: 10
+  n_freqs_views: 4
+  use_viewdirs: true
+Hierarchical_sampling:
+  n_samples_hierarchical: 10
+  perturb_hierarchical: false
+Model:
+  d_filter: 256
+  d_filter_fine: 256
+  n_layers: 8
+  n_layers_fine: 6
+  skip: []
+  use_fine_model: false
+Optimizer:
+  lr: 0.0005
+Stratified_sampling:
+  inverse_depth: false
+  n_samples: 10
+  perturb: true
+Training:
+  batch_size: 1
+  center_crop: true
+  center_crop_iters: 50
+  chunksize: 1
+  display_rate: 25
+  n_iters: 10000
+  one_image_per_step: true
+kwargs_sample_hierarchical:
+  perturb: true
+kwargs_sample_stratified:
+  inverse_depth: false
+  n_samples: 10
+  perturb: true

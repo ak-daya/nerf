@@ -1,17 +1,20 @@
 import torch.nn as nn
 import torch
+from torchsummary import summary
 
 class NeRFModel(nn.Module):
     def __init__(self,
         layers = 8,
         ch_hidden = 256,
         ch_pos = 3,
-        ch_dir = None,
+        ch_dir = 3,
+        Freq_pos = 10,
+        Freq_dir = 4
     ):
         super().__init__()
 
         self.block1 = nn.Sequential(
-            nn.Linear(ch_pos, ch_hidden),
+            nn.Linear(6*Freq_pos+3, ch_hidden),
             nn.ReLU(),
             nn.Linear(ch_hidden, ch_hidden),
             nn.ReLU(),
@@ -23,7 +26,7 @@ class NeRFModel(nn.Module):
 
         self.block2 = nn.Sequential(
             # Skip connection
-            nn.Linear(ch_hidden + ch_dir, ch_hidden),
+            nn.Linear(ch_hidden + 6*Freq_pos+3, ch_hidden),
             nn.ReLU(),
             nn.Linear(ch_hidden, ch_hidden),
             nn.ReLU(),
@@ -37,7 +40,7 @@ class NeRFModel(nn.Module):
             nn.ReLU())
         
         self.block3 = nn.Sequential(
-            nn.Linear(ch_hidden + ch_dir, ch_hidden // 2),
+            nn.Linear(ch_hidden + 6*Freq_dir+3, ch_hidden // 2),
             nn.ReLU()
         )
 
@@ -52,7 +55,7 @@ class NeRFModel(nn.Module):
         Feed position, x, direction, d
         """
         # Residual
-        res = x
+        res = x 
 
         x = self.block1(x)
         
@@ -72,3 +75,20 @@ class NeRFModel(nn.Module):
         x = torch.cat([color, opacity], dim=-1)
 
         return x
+    
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+
+
+model = NeRFModel().to(device)
+
+dummyinput_x, dummyinput_d = (torch.rand(1, 63).to(device), torch.rand(1, 27).to(device))  
+
+out = model(dummyinput_x, dummyinput_d) 
+
+print(out.shape)
+print(out)
+
+# out.view(800, 800, 8, 4)
+
+summary(model, [(63,), (27,)])
